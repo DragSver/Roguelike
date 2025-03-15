@@ -10,8 +10,10 @@ public class Enemy : Character
     public List<CardStats> CardsInHand;
     public static bool EnemyIsDie;
 
-    public override void Start()
+    public override void Init()
     {
+        base.Init();
+        
         var characterStats = RandomSelection();
         
         Instantiate(Resources.Load(characterStats.SpriteLink), transform, false);
@@ -26,28 +28,31 @@ public class Enemy : Character
         cardController.SetCardsInHandEnemy(6, CardsInHand);
     }
 
-    public override void CardMove(Card card)
+    public override void CardMove(CardView cardView)
     {
-        if (card.CardStat.Damage != 0)
+        if (cardView.CardStat.Damage != 0)
         {
-            gameController.hero.GetDamage(Damage * card.CardStat.Damage);
+            gameController.hero.GetDamage(Damage * cardView.CardStat.Damage);
         }
-        if (card.CardStat.Heal != 0)
+        if (cardView.CardStat.Heal != 0)
         {
-            cardMove.text = "+" + card.CardStat.Heal + " здоровья";
-            SetHealth(Health + card.CardStat.Heal);
+            cardMove.text = "+" + cardView.CardStat.Heal + " здоровья";
+            SetHealth(Health + cardView.CardStat.Heal);
+            // var waitForSecondsEnumerable = WaitUtils.Wait(_timeOnTextActionCard);
             cardMove.text = "";
         }
-        if (card.CardStat.Defense != 0)
+        if (cardView.CardStat.Defense != 0)
         {
-            cardMove.text = "+" + card.CardStat.Heal + " защиты";
-            SetDefense(Defense + card.CardStat.Defense);
+            cardMove.text = "+" + cardView.CardStat.Heal + " защиты";
+            SetDefense(Defense + cardView.CardStat.Defense);
+            // var waitForSecondsEnumerable = WaitUtils.Wait(_timeOnTextActionCard);
             cardMove.text = "";
         }
-        if (card.CardStat.CountAddCards != 0)
+        if (cardView.CardStat.CountAddCards != 0)
         {
-            cardMove.text = "+" + card.CardStat.Heal + " карты";
-            cardController.SetCardsInHandEnemy(card.CardStat.CountAddCards, CardsInHand);
+            cardMove.text = "+" + cardView.CardStat.Heal + " карты";
+            cardController.SetCardsInHandEnemy(cardView.CardStat.CountAddCards, CardsInHand);
+            // var waitForSecondsEnumerable = WaitUtils.Wait(_timeOnTextActionCard);
             cardMove.text = "";
         }
     }
@@ -58,7 +63,7 @@ public class Enemy : Character
         _destroyEnemy = gameObject;
         gameController.enemy = null;
         Destroy(_destroyEnemy);
-        gameController.NextWave();
+        OnDead?.Invoke();
     }
     
     private CharacterStats RandomSelection()

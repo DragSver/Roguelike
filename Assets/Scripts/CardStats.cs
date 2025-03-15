@@ -1,25 +1,29 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
+[Serializable]
 public struct CardStats
 {
-    public readonly string Name;
-    public readonly GameObject LogoPrefab;
-    public readonly string Description;
+    public string Name;
+    public Sprite Image;
+    public string Description;
     
-    public readonly int Heal;
-    public readonly int Defense;
-    public readonly int Damage;
-    public readonly int CountAddCards;
+    public int Heal;
+    public int Defense;
+    public int Damage;
+    public int CountAddCards;
+    public int CountCardsInDeck;
 
     public CardStats(int heal, int damage, int defense, int countAddCards, string name, string description,
-        string logoPrefab)
+        Sprite image, int countCardsInHand)
     {
         Name = name;
         Description = description;
-        LogoPrefab = Resources.Load(logoPrefab) as GameObject;
+        Image = image;
         Heal = heal;
         Damage = damage;
         Defense = defense;
         CountAddCards = countAddCards;
+        CountCardsInDeck = countCardsInHand;
     }
 }

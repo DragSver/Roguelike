@@ -1,10 +1,11 @@
-using TMPro;
 using UnityEngine;
 
 public class Hero : Character
 {
-    public override void Start()
+    public override void Init()
     {
+        base.Init();
+        
         Instantiate(Resources.Load(HeroMap.Heroes[0].SpriteLink), transform, false);
 
         MaxHealth = Health = HeroMap.Heroes[0].MaxHealth;
@@ -16,34 +17,36 @@ public class Hero : Character
         cardController.SetCardsInHandHero(6);
     }
 
-    public override void CardMove(Card card)
+    public override void CardMove(CardView cardView)
     {
-        if (card.CardStat.Damage != 0)
+        if (cardView.CardStat.Damage != 0)
         {
-            gameController.enemy.GetDamage(Damage * card.CardStat.Damage);
+            gameController.enemy.GetDamage(Damage * cardView.CardStat.Damage);
         }
-        if (card.CardStat.Heal != 0)
+        if (cardView.CardStat.Heal != 0)
         {
-            cardMove.text = "+" + card.CardStat.Heal + " здоровья";
-            SetHealth(Health + card.CardStat.Heal);
+            cardMove.text = "+" + cardView.CardStat.Heal + " здоровья";
+            SetHealth(Health + cardView.CardStat.Heal);
+            // var waitForSecondsEnumerable = WaitUtils.Wait(_timeOnTextActionCard);
             cardMove.text = "";
         }
-        if (card.CardStat.Defense != 0)
+        if (cardView.CardStat.Defense != 0)
         {
-            cardMove.text = "+" + card.CardStat.Heal + " защиты";
-            SetDefense(Defense + card.CardStat.Defense);
+            cardMove.text = "+" + cardView.CardStat.Heal + " защиты";
+            SetDefense(Defense + cardView.CardStat.Defense);
+            // var waitForSecondsEnumerable = WaitUtils.Wait(_timeOnTextActionCard);
             cardMove.text = "";
         }
-        if (card.CardStat.CountAddCards != 0) 
+        if (cardView.CardStat.CountAddCards != 0) 
         {
-            cardMove.text = "+" + card.CardStat.Heal + " карты";
-            cardController.SetCardsInHandHero(card.CardStat.CountAddCards);
+            cardMove.text = "+" + cardView.CardStat.Heal + " карты";
+            cardController.SetCardsInHandHero(cardView.CardStat.CountAddCards);
+            // var waitForSecondsEnumerable = WaitUtils.Wait(_timeOnTextActionCard);
             cardMove.text = "";
         }
     }
-    
+
     protected override void IsDie()
     {
-        gameController.EndGame();
     }
 }

@@ -1,10 +1,11 @@
-﻿using TMPro;
+﻿using RPGCardRoguelike.Utils;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class DropZone : MonoBehaviour, IDropHandler
 {
-    private static readonly System.Random Random = new();
+    [SerializeField] private float _timeEnemiesCardOnTable = 2f;
     
     public GameController gameController;
     public CardController cardController;
@@ -17,7 +18,6 @@ public class DropZone : MonoBehaviour, IDropHandler
 
     private bool _moveOfHero = true;
     public TextMeshProUGUI whoseMove;
-
     
     public void OnDrop(PointerEventData eventData)
     {
@@ -32,7 +32,7 @@ public class DropZone : MonoBehaviour, IDropHandler
             СardDistribution();
             Enemy.EnemyIsDie = false;
         }
-        _countAddCards = cardController.GetComponentsInChildren<Card>().Length;
+        _countAddCards = cardController.GetComponentsInChildren<CardView>().Length;
         if (_countOfMoves < 3 && _countAddCards > 0) return;
         
         SwitchMove(); //начало хода врага
@@ -48,7 +48,7 @@ public class DropZone : MonoBehaviour, IDropHandler
         ActiveCards(false);
         _card.GetComponent<DragDrop>().defaultParent = transform;
         
-        gameController.hero.CardMove(_card.GetComponent<Card>());
+        gameController.hero.CardMove(_card.GetComponent<CardView>());
         SetCountOfMoves(_countOfMoves + 1);
             
         Destroy(_card);
@@ -67,19 +67,19 @@ public class DropZone : MonoBehaviour, IDropHandler
         if (gameController.enemy.CardsInHand.Count <= 0)
             return;
         
-        var numRandomStat = Random.Next(gameController.enemy.CardsInHand.Count);
+        var numRandomStat = Random.Range(0, gameController.enemy.CardsInHand.Count);
         
         var cardStats = gameController.enemy.CardsInHand[numRandomStat];
         gameController.enemy.CardsInHand.RemoveAt(numRandomStat);
         
-        var cardGameObject = Instantiate(cardController.cardPrefab, transform, false);
-        var card = cardGameObject.GetComponent<Card>();
+        var card = Instantiate(cardController.CardViewPrefab, transform, false);
         card.ShowCard(cardStats);
 
         gameController.enemy.CardMove(card);
         SetCountOfMoves(_countOfMoves + 1);
-        
-        Destroy(cardGameObject);
+
+        var waitForSecondsEnumerable = WaitUtils.Wait(_timeEnemiesCardOnTable);
+        Destroy(card.gameObject);
     }
 
     
@@ -87,7 +87,7 @@ public class DropZone : MonoBehaviour, IDropHandler
     {
         if (_moveOfHero)
         {
-            _countAddCards = cardController.GetComponentsInChildren<Card>().Length;
+            _countAddCards = cardController.GetComponentsInChildren<CardView>().Length;
             if (_countAddCards < 6)
                 cardController.SetCardsInHandHero(6 - _countAddCards);
         }
@@ -122,5 +122,4 @@ public class DropZone : MonoBehaviour, IDropHandler
         _countOfMoves = countOfMoves;
         countOfMovesText.text = _countOfMoves + "/3";
     }
-
 }

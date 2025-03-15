@@ -19,9 +19,12 @@ public class GameController : MonoBehaviour
 
     public void Start()
     {
+        cardController.Init();
         hero = Instantiate(heroPanel, transform, false).GetComponent<Hero>();
         hero.cardController = cardController;
         hero.gameController = this;
+        hero.Init();
+        hero.OnDead += EndGame;
         NextLevel();
     }
 
@@ -41,12 +44,14 @@ public class GameController : MonoBehaviour
             enemy = Instantiate(enemyPanel, transform, false).GetComponent<Enemy>();
             enemy.cardController = cardController;
             enemy.gameController = this;
+            enemy.OnDead += NextWave;
+            enemy.Init();
             _countWave--;
         }
         else NextLevel();
     }
 
-    public void EndGame()
+    private void EndGame()
     {
         SceneManager.LoadScene(2);
     }
